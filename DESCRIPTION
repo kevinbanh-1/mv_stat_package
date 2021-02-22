@@ -9,3 +9,5 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/kevinbanh-1/MATH5793BANH
+BugReports: https://github.com/kevinbanh-1/MATH5793BANH/issues
