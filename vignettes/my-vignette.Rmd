@@ -43,13 +43,18 @@ Users will be able to
 
 * Choose the initial value to calculate the Newton Raphson algorithm.
 
-# Background and theory of factor rotations
+# Background
 
-The central idea to the main function of this Shiny app is the idea of rotating the axes of a plot. We're interested in rotating the axes in such a way where the axes are better fit for the points thus complexity is reduced and we are able to obtain an elliptic cloud of points with major and minor axes. This is so the factors are more easily interpretable.
+
+## Factor rotations
+
+The central idea to the main function of this Shiny app is the idea of rotating the axes of a plot. We're interested in rotating the axes in such a way where the axes are better fit for the points thus complexity is reduced and we are able to obtain an elliptic cloud of points with major and minor axes. This is so the factors are more easily interpretable and we are able to explain the variance between our variables as much as possible.
 
 We can obtain these new axes based on theta according to the following formula
 
 $$\tilde{x_1} = x_1\cos(\theta) + x_2\sin(\theta)$$
 
 $$ \tilde{x_2} = -x_1\sin(\theta) + x_2\cos(\theta)$$
+
+We want to obtain the result that the covariance $\tilde{s_{12}} = 0$.
 
