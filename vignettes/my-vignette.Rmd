@@ -1,0 +1,55 @@
+---
+title: "shiny-rotations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+  
+)
+
+# Directory to shiny app
+dird1 <- system.file("shinyapp", package = "MATH5793BANH")
+```
+
+```{r setup}
+library(MATH5793BANH)
+```
+
+
+
+
+# Introduction
+
+This Shiny application applies the ideas of multivariate statistics in a dynamic program.
+
+Users will be able to 
+
+* Input a .csv data file
+
+* Choose the x and y variables obtained from the input file to plot
+
+* Choose from a list of colors for the plot
+
+* Choose the angle (radians) in which the plot will be rotated
+
+** All points will be rotated accordingly to the rotation matrix.
+
+* Choose the initial value to calculate the Newton Raphson algorithm.
+
+# Background and theory of factor rotations
+
+The central idea to the main function of this Shiny app is the idea of rotating the axes of a plot. We're interested in rotating the axes in such a way where the axes are better fit for the points thus complexity is reduced and we are able to obtain an elliptic cloud of points with major and minor axes. This is so the factors are more easily interpretable.
+
+We can obtain these new axes based on theta according to the following formula
+
+$$\tilde{x_1} = x_1\cos(\theta) + x_2\sin(\theta)$$
+
+$$ \tilde{x_2} = -x_1\sin(\theta) + x_2\cos(\theta)$$
+
