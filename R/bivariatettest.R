@@ -52,7 +52,8 @@ bivariatettest <- function(data, mu0, alpha = .05){
     ylab(names(data)[2]) +
     xlab(names(data)[1]) +
     ggtitle(paste0((1-alpha)*100, "% confidence ellipse")) +
-    theme(plot.title = element_text(hjust = .5))
+    theme(plot.title = element_text(hjust = .5)) +
+    scale_color_gradient(low="blue", high="red")
 
 
 
