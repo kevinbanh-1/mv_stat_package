@@ -47,7 +47,8 @@ bivariatettest <- function(data, mu0, alpha = .05){
 
   # Plot data and confidence ellipse
   g.ellipse <- qplot(data = data, x = data[,1], y = data[,2], color = 1:n) +
-    stat_ellipse(level = 1-alpha) +
+    stat_ellipse(geom = "polygon",level = 1-alpha, type = "norm", alpha = 1/10, color = "orangered", aes(fill = "orangered")) +
+    theme(legend.position = "none") +
     ylab(names(data)[2]) +
     xlab(names(data)[1]) +
     ggtitle(paste0((1-alpha)*100, "% confidence ellipse")) +
