@@ -50,12 +50,12 @@ bivariatettest <- function(data, mu0, alpha = .05){
     stat_ellipse(level = 1-alpha) +
     ylab(names(data)[2]) +
     xlab(names(data)[1]) +
-    ggtitle(paste0(1-alpha, " confidence ellipse")) +
+    ggtitle(paste0((1-alpha)*100, "% confidence ellipse")) +
     theme(plot.title = element_text(hjust = .5))
 
 
 
-  return(list(t.test.accept = inEllipse, eigen = eigen, major.half.axis = major, minor.half.axis = minor, major.minor.ratio = ratio,
+  return(list(t.test.accept = inEllipse, in.ellipse = inEllipse, eigen = eigen, major.half.axis = major, minor.half.axis = minor, major.minor.ratio = ratio,
               confidence.ellipse = g.ellipse))
 
 
