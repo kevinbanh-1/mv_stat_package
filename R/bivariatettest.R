@@ -55,7 +55,8 @@ bivariatettest <- function(data, mu0, alpha = .05){
 
 
 
-  return(list(t.test.accept = inEllipse, in.ellipse = inEllipse, eigen = eigen, major.half.axis = major, minor.half.axis = minor, major.minor.ratio = ratio,
+  return(list(t.test.accept = inEllipse, in.ellipse = inEllipse, t.calc = tsq,
+              scaled.f = f.calc, eigen = eigen, major.half.axis = major, minor.half.axis = minor, major.minor.ratio = ratio,
               confidence.ellipse = g.ellipse))
 
 
