@@ -1,0 +1,120 @@
+---
+title: "shinyMVnorm-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{shinyMVnorm-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MATH5793BANH)
+```
+
+
+This shiny plot will produce numerous tests and plots that will aid in determining whether or not the univariate/multivariate data is normal or not.
+
+
+# Univariate tests of normality
+
+## Proportion test
+
+We are interested in seeing if a proportion of the data lies within certain intervals. We know that for a normal distribution, it is expected that a probability of .683 of the data will lie within 1 standard deviation of the mean and .954 within 2 standard deviations of the mean so assign $p_{i1}$ and $p_{i2}$ respectively. We will iterate through all data points and have a counter for those which lie within the intervals. Divide by the total length of the data vector and we get our $p_{i1}$ and $p_{i2}$ vectors. 
+
+
+Then we need to check 
+
+$$ |\hat{p}_{i1} - .683| > 3\sqrt{\frac{.683(1-.683)}{n}} = \frac{1.396}{\sqrt{n}}$$
+  
+  $$ |\hat{p}_{i2} - .954| > 3\sqrt{\frac{.954(1-.954)}{n}} = \frac{.628}{\sqrt{n}}$$
+  
+  
+  ## Q-Q plots
+  
+  Q-Q plots are plots of the sample quantile vs. the quantile one would expect to observe if the observations were normally distributed and normality is determined if the points adhere to the straight line. 
+
+Quantiles can be calculated by the following result
+
+$$P[Z \leq q_{j}] = \frac{j - 1/2}{n}$$
+
+and furthermore with the r function qchisq((j-1/2)/n,ncol).
+
+We sort our data samples and plot the ordered observations vs. our quantiles.
+
+
+
+## Correlation coefficient
+
+The correlation coefficient or the straightness of a Q-Q plot can be calculated using the following formula
+
+
+$$r_Q = \frac{\sum_{j = 1}^n(x_j - \bar{x})(q - \bar{q})}{\sqrt{\sum_{j = 1}^n(x_j - \bar{x})^2}\sqrt{\sum_{j = 1}(q - \bar{q})^2}}$$
+
+
+We test this against the standard correlation values in relation to the number of samples we have.
+
+
+# Multivariate tests
+
+## Bivariate test of normality
+
+Let x be a pair of observations $(x_n, y_n)$
+
+then test
+
+$$(x-\bar{x})'S^{-1}(x-\bar{x}) \leq \chi_2^2(.5)$$
+
+for all pairs of x. The idea is that we want at least half of our data points to lie within the estimated contour of the $\chi_2^2(.5)$
+
+
+
+## Multivariate Q-Q plot
+
+The same quantiles as the one in the univariate case are computed, but this time we are taking the left hand side of the equation above ($distance^2$) and plotting the ordered quantities against the quantiles so $d^2 vs. \chi$
+
+
+
+# Detecting outliers
+
+
+The steps to detecting outliers are
+
+* Make marginal dot plots (points farther away from the others are possible outliers)
+
+* Scatter plot for each pair of variables (points that are farther away from the others)
+
+* Standardized values and examine for large and small values
+
+* Generalized squared distances ($d^2$ as stated above) and observe for large and small values
+
+
+
+
+# Box cox transformation
+
+The box cox transformation is a power transformation that stabilizes variance and thus making the data more akin to the normal distribution. It is achieved by the following formula 
+
+$$ln(\lambda) = \frac{-n}{2} ln(\frac{1}{n}\sum_{j=1}^n (x_j^\lambda - \bar{x^\lambda})^2) + (\lambda - 1)\sum_{j = 1}^nln(x_j)$$
+
+where when $\lambda \neq 0$
+
+$$x^\lambda = \frac{x^\lambda - 1}{\lambda}$$
+
+and when $\lambda = 0$
+
+$$x^\lambda = ln(x)$$
+
+
+furthermore
+
+$$\bar{x^\lambda} = \frac{1}{n}\sum_{j=1}^n\frac{x_j^\lambda - 1}{\lambda}$$
+
+
+Calculate this for a range of $\lambda$ choices and find the maximum value of $ln(\lambda) vs \lambda$ to find the minimum variance.

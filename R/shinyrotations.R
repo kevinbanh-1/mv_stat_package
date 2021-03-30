@@ -4,6 +4,7 @@
 #' and be able to calculate the correlations based on which point they want to drop. Additionally, the user will be able to see which root for
 #' which the covariance is 0 given axes rotations.
 #'
+#' @import shiny
 #' @return Shiny app
 #' @export
 #'

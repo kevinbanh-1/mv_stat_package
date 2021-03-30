@@ -17,4 +17,12 @@ Suggests:
 VignetteBuilder: knitr
 Imports:
   ggplot2,
-  shiny
+  shiny,
+  shinythemes,
+  reactable,
+  latex2exp,
+  ggalt,
+  grid,
+  formattable,
+  corrplot,
+  colourpicker
