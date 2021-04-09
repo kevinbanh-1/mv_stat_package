@@ -1,0 +1,397 @@
+---
+title: "project1-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{project1-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MATH5793BANH)
+library(car)
+library(RVAideMemoire)
+```
+
+
+# Normality check
+
+
+## Before log transformation {.tabset .tabset-pills .tabset-fade}
+```{r}
+weld <- read.table("C:\\Users\\kevin\\OneDrive\\Documents\\MATH5793\\Project1\\T5-9.DAT")
+colnames(weld) <- c("Voltage","Current","Feed-speed","Gasflow")
+head(weld)
+```
+
+
+
+
+### Proportion test
+```{r}
+# Proportion test
+    
+proptest <- function(x){
+    # x is a data vector
+    n <- length(x)
+    outliers = FALSE
+    idx = 0
+        
+    totalp1 = 0 
+    for(i in 1:n){
+      if((x[i] > (mean(x) - sd(x))) & (x[i] < (mean(x) + sd(x)))){
+          totalp1 = totalp1 + 1
+      }
+    }
+        
+    p1 <- totalp1/n
+     
+        
+    totalp2 = 0
+    for(i in 1:n){
+      if((x[i] > (mean(x) - 2*sd(x))) & (x[i] < (mean(x) + 2*sd(x)))){
+          totalp2 = totalp2 + 1
+      }
+    }
+    p2 <- totalp2/n
+        
+    boundary1 <- 1.396/sqrt(n)
+    boundary2 <- .628/sqrt(n)
+        
+    if((abs(p1- .683) > boundary1)){
+      outliers = TRUE
+    } 
+        
+    if((abs(p2 - .954)) > boundary2){
+      outliers = TRUE
+    }
+    return(list(p1 = p1, p2 = p2, outliers.present = outliers))
+}
+
+for(i in 1:4){
+  print(proptest(weld[,i]))
+}
+```
+
+
+
+### Univariate Q-Q plots
+
+```{r}
+qqPlot(weld$Voltage)
+shapiro.test(weld$Voltage)$p.val
+qqPlot(weld$Current)
+shapiro.test(weld$Current)$p.val
+qqPlot(weld$`Feed-speed`)
+shapiro.test(weld$`Feed-speed`)$p.val
+qqPlot(weld$Gasflow)
+shapiro.test(weld$Gasflow)$p.val
+```
+
+
+### Correlation test
+
+```{r}
+qqcorr <- function(x){
+  # x is a data vector
+        
+  x <- sort(x)
+  sum_num = 0
+  sum_denom1 = 0
+  sum_denom2 = 0
+  n = length(x)
+  for(i in 1:n){
+    quant <- qnorm((i-1/2)/n)
+    sum_num = sum_num + ((x[i] - mean(x))*(quant))
+    sum_denom1 = sum_denom1 + ((x[i] - mean(x))^2)
+    sum_denom2 = sum_denom2 + quant^2
+  }
+        
+  rq = sum_num/(sqrt(sum_denom1)*sqrt(sum_denom2))
+  return(rq)
+}
+
+for(i in 1:4){
+  print(qqcorr(weld[,i]))
+}
+
+length(weld[,1])
+```
+
+
+### Bivariate check
+```{r}
+# Function to check for bivariate norm
+bivariatenorm <- function(x1,x2){
+        # x1 is a data vector
+        # x2 is another data vector
+        
+        
+        
+        n <- length(x1)
+        dat <- matrix(c(x1,x2), nrow = length(x1), ncol = 2, byrow = FALSE)
+        xbar <- colMeans(dat)
+        cov <- cov(dat)
+        inv <- solve(cov)
+        chisq <- qchisq(.5,2)
+        
+        # Counters to hold the number of values greater/less than chi-square value
+        greater = 0
+        less = 0
+        norm = FALSE
+        for(i in 1:n){
+            mat <- matrix(c(x1[i] - xbar[1],
+                            x2[i] - xbar[2]), ncol = 1)
+            tsq <- t(mat)%*%inv%*%mat 
+            if(tsq <= chisq){
+                less = less + 1
+            }
+            
+            if(tsq > chisq){
+                greater = greater + 1
+            }
+        }
+        if(less/n >= .5){
+            norm = TRUE
+        }
+        
+        return(list(number.greater = greater,
+                    number.less = less, normal = norm))
+}
+
+for(i in 1:4){
+  for(j in 1:4){
+    if(i != j){
+      print(paste0("Normality of columns ", i, " and ", j, ":"))
+      print(bivariatenorm(weld[,i],weld[,j]))
+    }
+  }
+}
+
+```
+
+
+### Multivariate Q-Q plot
+
+```{r}
+mqqnorm(weld)
+```
+
+
+
+### Conclusions
+
+The proportion test function I've created first calculates the proportion of the univariate data within 1 and 2 standard deviations of the mean (output is p1 and p2 respectively). As long as the proportions do not exceed the following inequalities when taking into account the size of our data
+
+$$ |\hat{p}_{i1} - .683| > 3\sqrt{\frac{.683(1-.683)}{n}} = \frac{1.396}{\sqrt{n}}$$
+  
+$$ |\hat{p}_{i2} - .954| > 3\sqrt{\frac{.954(1-.954)}{n}} = \frac{.628}{\sqrt{n}}$$
+
+then there are no indications of departures from the normal distribution. As seen from the output of our function for all variables in the Welder data set, each variable does not have any indications of outlier data.
+
+
+From the univariate Q-Q plots and Shapiro-Wilk tests, we see that voltage and current adhere to the linear line and have a high p-value meaning there isn't enough evidence to reject the null hypothesis that the data is normal. Depending on the rejection level, however, feed-speed varies a decent amount of the linear line and has a low p-value of .08 thus weak evidence for the null if our rejection level was .05. Notice that gas flow does not adhere to the line at all and has a p-value close to 0 meaning it's not from a normal distribution.
+
+The correlation test of normality tests the straightness of the Q-Q plot by calculating the correlation coefficients of the points in the plot. We will use the following formula 
+$$r_Q = \frac{\sum_{j = 1}^n(x_j - \bar{x})(q - \bar{q})}{\sqrt{\sum_{j = 1}^n(x_j - \bar{x})^2}\sqrt{\sum_{j = 1}(q - \bar{q})^2}}$$
+Calculating the coefficient of each variable, when we test the values against the standardized critical points for the Q-Q plot (.9671,.9768,.9809) for n size of 40 for alpha levels (.01,.05,.10), we see that gas levels is not greater than the values thus it's not normal. Additioanally, feed-speed is not normal when alpha level is .10, but is for the others.
+
+Testing for bivariate normality, we create Hotelling's $T^2$ for each ith pair of data between the 2 variables and test it against the chi-square quantile for .5 p-value. We want at least 50% of more of the data to lie within the chi-square contour. Observing the output, we see that columns  [4,1], [3,2], and [3,1] are not bivariate normal, that is gas flow and voltage, current and feed-speed, and feed-speed and voltage are not bivariate normal.
+
+From the multi-normal Q-Q plot, we see that the larger the values, the more it begins to spread from the line thus the tail is going to be longer indicating a slight right skew to our Mahalanobis distance.
+
+
+## Log transformed data {.tabset .tabset-pills .tabset-fade}
+
+
+### Proportion test
+```{r}
+logweld <- with(weld,
+                data.frame(logVolt = log(Voltage),
+                        logCurrent = log(Current),
+                        logFeedSpeed = log(`Feed-speed`),
+                        logGasflow = log(Gasflow)))
+for(i in 1:4){
+  print(proptest(logweld[,i]))
+}
+```
+
+
+### Univariate Q-Q plots
+
+```{r}
+
+qqPlot(logweld$logVolt)
+shapiro.test(logweld$logVolt)
+
+qqPlot(logweld$logCurrent)
+shapiro.test(logweld$logCurrent)
+
+qqPlot(logweld$logFeedSpeed)
+shapiro.test(logweld$logFeedSpeed)
+
+qqPlot(logweld$logGasflow)
+shapiro.test(logweld$logGasflow)
+
+```
+
+
+
+### Coefficient test
+```{r}
+for(i in 1:4){
+  print(qqcorr(weld[,i]))
+}
+```
+
+
+
+
+### Bivariate test
+```{r}
+for(i in 1:4){
+  for(j in 1:4){
+    if(i != j){
+      print(paste0("Normality of columns ", i, " and ", j, ":"))
+      print(bivariatenorm(logweld[,i],logweld[,j]))
+    }
+  }
+}
+```
+
+### Multivariate Q-Q plot
+```{r}
+mqqnorm(logweld)
+```
+
+
+
+### Conclusion
+
+The conclusions here are going to be the same as before. While the log transformation did help a little bit with the Shapiro-Wilk's p-value for gas flow increasing slightly, there is still strong evidence for it not being normal. Additionally, all other results are still the same.
+
+
+
+
+# $T^2$-chart
+
+```{r}
+t2chart <- function(x){
+  # x is a data frame/matrix
+  require(ggplot2)
+  require(latex2exp)
+  
+  n = dim(x)[1]
+  p = dim(x)[2]
+  cov <- cov(x)
+  inv <- solve(cov)
+  xbar <- colMeans(x)
+  tsq.val <- c()
+  for(i in 1:n){
+    centered <- as.matrix(x[i,] - xbar)
+    tsq = centered%*%inv%*%t(centered)
+    tsq.val[i] = tsq
+  }
+  
+  lim95 <- qchisq(1-.05,df = p)
+  lim99 <- qchisq(1-.01,df = p)
+  g <- ggplot(NULL, aes(x = 1:n, y = tsq.val, color = 1:n)) + 
+    geom_point() + 
+    xlab("Case") + 
+    ylab(TeX("$T^2$")) + 
+    theme(plot.title = element_text(hjust = .5)) +
+    scale_color_gradient(low="blue", high="red") + 
+    theme(legend.position = "none") + 
+    geom_hline(yintercept = lim95, col = "brown1", linetype = "dotted") + 
+    geom_hline(yintercept = lim99, col = "brown1") + 
+    geom_text(aes(x = n, y = lim95, label = "95% limit")) + 
+    geom_text(aes(x = n, y = lim99, label = "99% limit"))
+    
+    
+  return(g)
+}
+
+t2chart(weld)
+```
+
+
+# Quality control ellipse
+```{r}
+qcellipse <- function(x1,x2,alpha = .05){
+  # data = data set
+  # mu0 = vector of means
+  # alpha = rejection level
+  
+  require(ggplot2)
+  n = length(x1)
+  # Plot data and confidence ellipse
+  g.ellipse <- qplot(NULL, x = x1, y = x2, color = 1:n) +
+    stat_ellipse(geom = "polygon",level = 1-alpha, type = "norm", alpha = 1/10, color = "orangered", aes(fill = "orangered")) +
+    theme(legend.position = "none") +
+    ylab("x2") +
+    xlab("x1") +
+    ggtitle(paste0((1-alpha)*100, "% confidence ellipse")) +
+    theme(plot.title = element_text(hjust = .5)) +
+    scale_color_gradient(low="blue", high="red")
+
+
+
+  return(g.ellipse)
+}
+
+qcellipse(x1 = weld$Voltage, x2 = log(weld$Gasflow), alpha = .01)
+```
+
+
+# Quality control plot
+
+```{r}
+xbarqc <- function(x){
+require(ggplot2)
+
+momts <- c(mean(x), sd(x))
+
+L = momts[1]-3*momts[2]
+U = momts[1]+ 3*momts[2]
+
+gq <- ggplot(NULL, aes(x = 1:length(x), y = x, color = 1:length(x))) + 
+  geom_point() + 
+  geom_line() + 
+  ylim(c(momts[1]-4*momts[2],momts[1]+4*momts[2])) + 
+  ylab("Individual Value") +
+  xlab("Observation Number") +
+  theme(legend.position = "none") + 
+  ggtitle("Quality Control Chart") +
+  theme(plot.title = element_text(hjust = .5)) +
+  scale_color_gradient(low="blue", high="red") + 
+  geom_hline(yintercept = U, col = "brown1") + 
+  geom_hline(yintercept = L, col = "brown1") + 
+  geom_hline(yintercept = momts[1], col = "brown1") + 
+  geom_text(aes(x=length(x) - 5,y=U,label = paste("UCL = ", round(U,3)))) + 
+  geom_text(aes(x=length(x) - 5,y=L,label = paste("LCL = ", round(L,3)))) +
+  geom_text(aes(x=length(x) - 5,y=momts[1], label = paste("xbar = ", round(momts[1],3))))
+
+
+return(list(lower.limit = L, upper.limit = U, moments = momts, qcplot = gq))
+}
+
+xbarqc(logweld$logGasflow)
+```
+
+
+
+# Test using package functions
+
+```{r}
+MATH5793BANH::t2chart(weld)
+MATH5793BANH::qcellipse(x1 = weld$Voltage, x2 = log(weld$Gasflow), alpha = .01)
+MATH5793BANH::xbarqc(logweld$logGasflow)
+```
+

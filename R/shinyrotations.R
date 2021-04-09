@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{shinyapp()}
+#' \dontrun{shinyrotations()}
 shinyrotations <- function(){
   shiny::runApp(system.file("shinyapp", package = "MATH5793BANH"), launch.browser = TRUE)
 }

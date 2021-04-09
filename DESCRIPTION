@@ -25,4 +25,6 @@ Imports:
   grid,
   formattable,
   corrplot,
-  colourpicker
+  colourpicker,
+  car,
+  RVAideMemoire

@@ -18,8 +18,9 @@ The result of a bivariate t-test. If the hypothesis is in the ellipse, then acce
 eigenvalues and vectors, plot of confidence ellipse, major minor axis and ratio.
 }
 \description{
-Bivariate T-test and Corresponding Confidence Intervals
+The function takes in a bivariate data set and tests it against a null hypothesis. It calculates Hotelling's T-square statistic and tests against a 50% chi-square quantile.
+Additionally, a confidence ellipse around the points is created for a given alpha level.
 }
 \examples{
-\dontrun{bivariate.t(rad.df, mu0 = c(.562,.589), alpha = .05)}
+\dontrun{bivariatettest(rad.df, mu0 = c(.562,.589), alpha = .05)}
 }

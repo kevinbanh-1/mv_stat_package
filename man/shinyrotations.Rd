@@ -15,5 +15,5 @@ and be able to calculate the correlations based on which point they want to drop
 which the covariance is 0 given axes rotations.
 }
 \examples{
-\dontrun{shinyapp()}
+\dontrun{shinyrotations()}
 }

@@ -1,5 +1,8 @@
 #' Bivariate T-test and Corresponding Confidence Intervals
 #'
+#' @description The function takes in a bivariate data set and tests it against a null hypothesis. It calculates Hotelling's T-square statistic and tests against a 50% chi-square quantile.
+#' Additionally, a confidence ellipse around the points is created for a given alpha level.
+#'
 #' @param data A data set with at least 2 qualitative variables
 #' @param mu0 The proposed null hypothesis mean values
 #' @param alpha The rejection region.
@@ -13,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{bivariate.t(rad.df, mu0 = c(.562,.589), alpha = .05)}
+#' \dontrun{bivariatettest(rad.df, mu0 = c(.562,.589), alpha = .05)}
 bivariatettest <- function(data, mu0, alpha = .05){
   # data = data set
   # mu0 = vector of means
