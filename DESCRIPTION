@@ -27,4 +27,6 @@ Imports:
   corrplot,
   colourpicker,
   car,
-  RVAideMemoire
+  RVAideMemoire,
+  boot,
+  grDevices

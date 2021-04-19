@@ -1,0 +1,119 @@
+---
+title: "project2-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{project2-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MATH5793BANH)
+```
+
+
+```{r}
+stock <- read.table("C:\\Users\\kevin\\OneDrive\\Documents\\MATH5793\\Project2\\T8-4.DAT")
+colnames(stock) <- c("JP-Morgan", "Citibank","Wells-Fargo","Royal-Dutch-Shell","Exxon-Mobil")
+head(stock)
+```
+
+
+
+# Function for part A
+
+```{r}
+pcaCalc <- function(data){
+  cov <- cov(data)
+  eig <- eigen(cov)
+  
+  n <- dim(cov)[1]
+  p <- dim(cov)[2]
+  
+  rho <- matrix(, nr = n, nc = p)
+  
+  for(i in 1:n){
+    for(j in 1:p){
+      rho[i,j] = eig$vectors[i,j]*sqrt(eig$values[i])/sqrt(cov[j,j])
+    }
+  }
+  
+  return(list(S = cov, sample.princ.comp = eig$vectors, total.variance = eig$values, correlation = rho))
+}
+```
+
+
+
+
+# a)
+```{r}
+# Sample covariance matrix
+pcaCalc(stock)$S
+
+
+# Correlation matrix of r(yi,xk)
+pcaCalc(stock)$sample.princ.comp
+```
+
+
+
+# b)
+```{r}
+sum = 0
+
+for(i in 1:3){
+  sum = sum + pcaCalc(stock)$total.variance[i]
+}
+
+sum/sum(pcaCalc(stock)$total.variance)
+```
+
+
+90% of the total variability in stocks rate of return is explained by the first 3 principal components -- JP Morgan, Citibanks, and Wells-Fargo
+
+
+# Function for part C
+```{r}
+bonf.cis <- function(x, n, p,alpha){
+  # x is a vector of variances
+  # n is the number of rows
+  # p is the number of columns
+  # alpha is the significance level
+  
+  for(i in 1:length(x)){
+    zcalc <- qnorm(1-alpha/(2*p))
+    lower.lim <- x[i]/(1 + zcalc*sqrt(2/n))
+    upper.lim <- x[i]/(1 - zcalc*sqrt(2/n))
+    print(paste(lower.lim, "<= lambda", i, " <= ", upper.lim))
+  }
+}
+```
+
+
+
+
+# c) 
+```{r}
+n <- dim(stock)[1]
+p <- dim(stock)[2]
+var3 <- c(pcaCalc(stock)$total.variance[1],pcaCalc(stock)$total.variance[2],pcaCalc(stock)$total.variance[3])
+bonf.cis(var3,n,p,.10)
+```
+
+
+
+# d)
+
+```{r}
+v <- pcaCalc(stock)$total.variance
+(v[1] + v[2])/(sum(v))
+```
+
+The stocks rates-of-return data can be summarized by the first 2 components (JP Morgan and Citibank) because given our calculations in b and c. In particular, in b we showed that the first 3 principal components explained 90% of the variability in our data. However, in c we know that the confidence intervals get wider as our $\lambda s$ get wider. It's apparent that the Bonferroni confidence intervals for the first two $\lambda s$ are much wider than the third, in addition to our calculation in d), the first two components explain 80% of the variability in our data thus we can reduce the data to just 2 dimensions.
