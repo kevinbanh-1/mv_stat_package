@@ -2,6 +2,8 @@
 
 export(bivariatenorm)
 export(bivariatettest)
+export(bonf.andgir.cis)
+export(pcaCalc)
 export(pcabootAG)
 export(proptest)
 export(qcellipse)

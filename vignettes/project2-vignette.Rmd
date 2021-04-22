@@ -33,19 +33,21 @@ head(stock)
 pcaCalc <- function(data){
   cov <- cov(data)
   eig <- eigen(cov)
-  
+
   n <- dim(cov)[1]
   p <- dim(cov)[2]
-  
-  rho <- matrix(, nr = n, nc = p)
-  
+
+  rho <- matrix(, nrow = n, ncol = p)
+
   for(i in 1:n){
     for(j in 1:p){
       rho[i,j] = eig$vectors[i,j]*sqrt(eig$values[i])/sqrt(cov[j,j])
     }
   }
-  
-  return(list(S = cov, sample.princ.comp = eig$vectors, total.variance = eig$values, correlation = rho))
+
+  total.sample.var <- sum(eig$values)
+
+  return(list(S = cov, sample.princ.comp = eig$vectors, variance = eig$values, total.variance = total.sample.var, correlation = rho))
 }
 ```
 
@@ -62,6 +64,13 @@ pcaCalc(stock)$S
 pcaCalc(stock)$sample.princ.comp
 ```
 
+Principal components are $\hat{y_i} = e_i'x$ where i is the column of the eigen vector output and e is an eigenvector. Thus for $\hat{y_1}$ and $\hat{y_2}$
+
+$$\hat{y_1} = .223x_1 + .307x_2 + .155x_3 + .639x_4 + .651x_5$$
+
+$$\hat{y_2} = .625x_1 + .570x_2 + .345x_3 -.248x_4 - .322x_5$$
+
+etc...
 
 
 # b)
@@ -69,7 +78,7 @@ pcaCalc(stock)$sample.princ.comp
 sum = 0
 
 for(i in 1:3){
-  sum = sum + pcaCalc(stock)$total.variance[i]
+  sum = sum + pcaCalc(stock)$variance[i]
 }
 
 sum/sum(pcaCalc(stock)$total.variance)
@@ -81,18 +90,24 @@ sum/sum(pcaCalc(stock)$total.variance)
 
 # Function for part C
 ```{r}
-bonf.cis <- function(x, n, p,alpha){
-  # x is a vector of variances
-  # n is the number of rows
-  # p is the number of columns
-  # alpha is the significance level
+bonf.andgir.cis <- function(data, q, alpha){
+  n = dim(data)[1]
+  p = dim(data)[2]
   
-  for(i in 1:length(x)){
-    zcalc <- qnorm(1-alpha/(2*p))
-    lower.lim <- x[i]/(1 + zcalc*sqrt(2/n))
-    upper.lim <- x[i]/(1 - zcalc*sqrt(2/n))
-    print(paste(lower.lim, "<= lambda", i, " <= ", upper.lim))
+  eigen.val <- c()
+  for(i in 1:q){
+    eigen.val[i] = eigen(cov(data))$value[i]
   }
+  
+  bonf.ci <- list()
+  for(i in 1:q){
+    zcalc <- qnorm(1-alpha/(2*q))
+    lower.lim <- eigen.val[i]/(1 + zcalc*sqrt(2/n))
+    upper.lim <- eigen.val[i]/(1 - zcalc*sqrt(2/n))
+    bonf.ci[[i]] = c(lower.lim, upper.lim)
+  }
+  
+  return(bonf.ci)
 }
 ```
 
@@ -101,10 +116,7 @@ bonf.cis <- function(x, n, p,alpha){
 
 # c) 
 ```{r}
-n <- dim(stock)[1]
-p <- dim(stock)[2]
-var3 <- c(pcaCalc(stock)$total.variance[1],pcaCalc(stock)$total.variance[2],pcaCalc(stock)$total.variance[3])
-bonf.cis(var3,n,p,.10)
+bonf.andgir.cis(stock,3,alpha = .10)
 ```
 
 
@@ -112,8 +124,11 @@ bonf.cis(var3,n,p,.10)
 # d)
 
 ```{r}
-v <- pcaCalc(stock)$total.variance
+v <- pcaCalc(stock)$variance
 (v[1] + v[2])/(sum(v))
 ```
 
-The stocks rates-of-return data can be summarized by the first 2 components (JP Morgan and Citibank) because given our calculations in b and c. In particular, in b we showed that the first 3 principal components explained 90% of the variability in our data. However, in c we know that the confidence intervals get wider as our $\lambda s$ get wider. It's apparent that the Bonferroni confidence intervals for the first two $\lambda s$ are much wider than the third, in addition to our calculation in d), the first two components explain 80% of the variability in our data thus we can reduce the data to just 2 dimensions.
+The stocks rates-of-return data can be summarized by the first 2 components (JP Morgan and Citibank) because given our calculations in b and c. In particular, in b we showed that the first 3 principal components explained 90% of the variability in our data. However, in c we know that the confidence intervals get wider as our $\lambda s$ get wider. It's apparent that the Bonferroni confidence intervals for the first two $\lambda s$ are much wider than the third, in addition to the first two components explain 80% of the variability in our data thus we can reduce the data to just 2 dimensions.
+
+
+
