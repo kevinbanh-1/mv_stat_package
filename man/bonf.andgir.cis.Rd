@@ -2,7 +2,7 @@
 % Please edit documentation in R/bonf.andgir.cis.R
 \name{bonf.andgir.cis}
 \alias{bonf.andgir.cis}
-\title{Bonferonni confidence interval for eigen values}
+\title{Bonferroni confidence interval for eigen values}
 \usage{
 bonf.andgir.cis(data, q, alpha)
 }

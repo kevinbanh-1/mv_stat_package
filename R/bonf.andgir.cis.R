@@ -1,6 +1,6 @@
 #' Bonferroni confidence interval for eigen values
 #'
-#' @description Function generates the bonferonni Anderson and Girshik confidence intervals for the eigen values of a data set
+#' @description Function generates the bonferroni Anderson and Girshik confidence intervals for the eigen values of a data set
 #'
 #' @param data A data set containing quantitative variables
 #' @param q Number of eigen values we want to generate confidence intervals for

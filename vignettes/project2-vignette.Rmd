@@ -70,7 +70,12 @@ $$\hat{y_1} = .223x_1 + .307x_2 + .155x_3 + .639x_4 + .651x_5$$
 
 $$\hat{y_2} = .625x_1 + .570x_2 + .345x_3 -.248x_4 - .322x_5$$
 
-etc...
+$$\hat{y_3} = .326x_1 - .250x_2 - .038x_3 - .642x_4 + .646x_5$$
+
+$$\hat{y_4} = .663x_1 - .414x_2 - .497x_3 + .309x_4 -.216x_5$$
+
+
+$$\hat{y_5} = .118x_2 - .590x_2 + .780x_3 + .148x_4 - .094x_5$$
 
 
 # b)
@@ -81,7 +86,7 @@ for(i in 1:3){
   sum = sum + pcaCalc(stock)$variance[i]
 }
 
-sum/sum(pcaCalc(stock)$total.variance)
+sum/pcaCalc(stock)$total.variance
 ```
 
 
