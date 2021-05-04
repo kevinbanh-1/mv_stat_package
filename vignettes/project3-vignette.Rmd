@@ -114,3 +114,65 @@ Orthogonal rotations forces factors to be uncorrelated, however, it's often unre
 Oblique rotation allows factors to be correlated and thus easier to find simpler structures of loadings.
 
 
+
+# Analyzing stocks-price data set
+
+
+```{r}
+data <- read.csv("C:\\Users\\kevin\\OneDrive\\Documents\\MATH5793\\Project3\\stocksprice.csv")
+head(data)
+
+
+
+
+obj <- pcfacta(data, m = 2, R = TRUE)
+
+obj$loadings
+```
+
+
+The loadings tells us how much variance each factor explains for the variable. It's unclear which factor is better to use because the values are so close together.
+
+
+
+```{r}
+obj$residual.mat
+```
+
+The residual matrix tells us the difference between our correlation/covariance matrix and $LL'$, that is the correlation between the variables. We want these values to be as low as possible and it's apparent that this result does just that thus the factor model fits well with our data.
+
+
+```{r}
+p <- plot(obj)
+
+for(i in 4:8){
+  print(p[[i]])
+}
+
+```
+
+The first two plots show specific variance and communalities of each variable. Communalities explains the overall percentage of variation explained by the 3 factors for each of the variables. We can see that all the values are quite high so the performance of our model is good so far. Specific variance tells us the variance of each variable, which is quite low from the plot hence good.
+
+
+
+The next three plots show scatter plots of loadings against each other using a pairs plot. We see that the structure in the unrotated factors is hard to interpret, but after performing varimax and promax rotations, the structure becomes a lot simpler and we can tell which factors explain the most variance for each of the variables.
+
+
+```{r}
+# Test result
+
+factorModelTest(obj, alpha = .05)
+```
+
+
+From the output of the factorModelTest function I've created, for a 2 factor model we found that the test statistic does not exceed that of the chi-square statistic hence there is not enough evidence to reject our 2 factor model thus it is adequate for our data.
+
+
+
+
+
+# Conclusion
+
+From our results, we can conclude that a 2 factor model is appropriate in capturing the variance in the stocks rate of return. Additionally, we've found that promax rotation is ideal in simplifying the structure to make it easier to interpret our data.
+
+
