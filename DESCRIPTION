@@ -29,4 +29,10 @@ Imports:
   car,
   RVAideMemoire,
   boot,
-  grDevices
+  grDevices,
+  textutils,
+  GGally,
+  gt,
+  kableExtra,
+  magrittr
+  

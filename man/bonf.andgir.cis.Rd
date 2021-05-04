@@ -14,10 +14,10 @@ bonf.andgir.cis(data, q, alpha)
 \item{alpha}{Significance level}
 }
 \value{
-List containing bonferonni confidence intervals
+List containing bonferroni confidence intervals
 }
 \description{
-Function generates the bonferonni Anderson and Girshik confidence intervals for the eigen values of a data set
+Function generates the bonferroni Anderson and Girshik confidence intervals for the eigen values of a data set
 }
 \examples{
 df <- data.frame(x = rnorm(30), y = rnorm(30), z = rnorm(30))

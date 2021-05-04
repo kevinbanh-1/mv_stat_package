@@ -6,7 +6,7 @@
 #' @param q Number of eigen values we want to generate confidence intervals for
 #' @param alpha Significance level
 #'
-#' @return List containing bonferonni confidence intervals
+#' @return List containing bonferroni confidence intervals
 #' @export
 #'
 #' @examples

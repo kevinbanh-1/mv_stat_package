@@ -1,0 +1,116 @@
+---
+title: "project3-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{project3-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MATH5793BANH)
+```
+
+
+# Introduction
+
+The purpose of factor analysis is to describe the covariance relationships among many variables in terms of latent (i.e unobservable) random quantities called factors. The use of latent variables is what distinguishes factor analysis and principal component analysis (PCA). An example would be that test scores across school subjects suggests a latent intelligence factor. For both factor analysis and PCA, both of these methods serve to reduce the dimensions of a data set to an appropriate size that still captures variance in variables.
+
+
+# Problem
+
+Using the stocks-price data set, we have 103 weekly rates of return on 5 stocks: J P Morgan, Citibank, Wells Fargo, Royal Dutch Shell, and ExxonMobil. The problem here is how do we determine how many factors to choose which explains enough variance in our data? Given this data set, there are only 5 variables, which is a small amount but if there was hundreds of variables this would be a very important question to ask. We want to reduce the dimensions of any given data so that it's easier to interpret it. 
+
+We do this by creating an orthogonal factor model, calculating our loadings and variances in R, then interpret the results. 
+
+
+# Orthogonal Factor Model
+
+The model is given by 
+
+$$X - \mu = LF + \epsilon$$
+
+where $F$ is an m x 1 vector of factors, $\epsilon$ is a p x 1 vector of errors, and L is a p x m matrix of factor loadings. That is, the model is a linear combination of loadings and factors.
+
+Some properties to note is that 
+
+$$E(F) = 0, \: Cov(F) = E(FF') = I$$
+
+$$ E(\epsilon) = 0, \: Cov(\epsilon) = E(\epsilon\epsilon') = \psi$$
+
+Using these results and if we solve for x in the factor model, we can find the covariance structure through the following calculations
+
+$$\sum = Cov(X) = E(X - \mu)(X - \mu)' = L(E(FF'))L' + E(eF')L' + L(E(Fe')) + E(ee')$$
+
+$$ = LL' + \psi$$
+
+
+Communality is the amount of variance ranging from 0 to 1 that is shared among a set of items and when items are highly correlated, this value becomes higher. This is represented by 
+
+$$h^2_i = l^2_{i1} + l^2_{i2} + ... + l^2_{im}$$
+
+That is, the communality of a variable is the sum of all of its squared factor loadings. 
+
+Specific variance is the variance specific to an item such as test scores on a math test due to taking it early in the day vs. at the end.
+
+The total variance of $X_i$ is made up by the sum of its communality and specific variance, $\psi_i$
+
+
+
+# Methods of Estimation
+
+## Principal Component Method
+
+Let $\sum = LL' + \psi$ where $\tilde{L} = [\sqrt{\hat{\lambda_1}}\hat{\epsilon_1} \: | \: \sqrt{\hat{\lambda_2}}\hat{\epsilon_2} \: | \: ... \: | \: \sqrt{\hat{\lambda_m}}\hat{\epsilon_m}]$ are the estimated factor loadings. The index m is for the number of factors in our model. For example, a value of m tells us to produce loadings for the first two eigenvalue-eigenvector pair. What the model $\sum$ tells us is the variability in our data and the estimate of it is the variability explained by the factors by taking linear combinations of communalites and specific variances.
+
+
+Estimated specific variance can be attained by the diagonal elements of $S - \tilde{L}\tilde{L'}$ or $1-\hat{h_i}^2$. Estimated communalities are calculated just as before. For example, the specific variance for a communality value of $.5$ is $1-.5^2 = .75$
+
+The residual matrix is calculated with $S - (\tilde{L}\tilde{L'} + \tilde{\psi})$. What the residual matrix tells us is the degree to which a given data set fits this condition of each variable being expressed by its communality and specific variance. We want as low of values as possible because the higher the value is, the less the factor model fits with the data.
+
+
+
+
+# Factor Model Testing
+
+To perform hypothesis test, we'll be testing against the null hypothesis  of the adequacy of the m common factor model, that is testing against $H_0: \: \sum = LL' + \psi$. The test statistic will be 
+
+$$[n-1-(2p + 4m + 5)/6]ln\frac{|\hat{L}\hat{L}' + \hat{\psi}|}{|S_n|}$$
+
+where $[n-1-(2p + 4m + 5)/6]$ is Bartlett's correction term and $\hat{L}\hat{L}' + \hat{\psi}$ is the maximum likelihood estimate of the factor model.
+
+This statistic will be tested against a chi-square quantile.
+
+We reject H_0 at the $\alpha$ level of significance if 
+
+$$[n-1-(2p + 4m + 5)/6]ln\frac{|\hat{L}\hat{L}' + \hat{\psi}|}{|S_n|} > \chi^2_{[(p-m)^2 - p - m]/2}(\alpha)$$
+
+Note that since the degrees of freedom of the chi-square quantile must be positive, the following condition is necessary to proceed with the test
+
+$$ m < \frac{1}{2}(2p + 1 - \sqrt{8p + 1})$$
+
+
+
+# Factor Rotation
+
+The role of rotations in factor analysis is that they reduce the complexity of loadings to make the structure simpler and thus easier to understand. Hence, if we rotated the factor loadings and the data is still not interpretable, we will continue rotating. 
+
+Some brief background on the notations of factor rotation -- denote $\hat{L}T$ as the matrix of rotated loadings where $T$ is some positive definite matrix and $TT' = I$. The estimated covariance is the same even with the rotations because
+
+$$\hat{L}\hat{L}' + \hat{\psi} = \hat{L}TT'\hat{L} + \psi$$
+
+
+There are two types of rotations -- orthogonal and oblique (varimax and promax respectively).
+
+Orthogonal rotations forces factors to be uncorrelated, however, it's often unrealistic for factors to be uncorrelated as well as finding a simpler structure as a solution.
+
+Oblique rotation allows factors to be correlated and thus easier to find simpler structures of loadings.
+
+
